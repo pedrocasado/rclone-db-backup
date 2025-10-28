@@ -12,8 +12,7 @@ MYSQL_DATABASE=${MYSQL_DATABASE}
 # Rclone settings
 R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
 R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
-R2_ENDPOINT=${R2_ENDPOINT}
-R2_BUCKET=${R2_BUCKET}
+R2_ENDPOINT=${R2_ENDPOINT}/${R2_BUCKET}
 R2_PATH=${R2_PATH:-mysql-backup}
 
 # Backup settings
@@ -35,11 +34,12 @@ provider = Cloudflare
 access_key_id = ${R2_ACCESS_KEY_ID}
 secret_access_key = ${R2_SECRET_ACCESS_KEY}
 endpoint = ${R2_ENDPOINT}
+acl = private
 EOF
 
 # Dump the database and compress
 echo "Dumping database..."
-mysqldump -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} \
+mysqldump --skip-ssl -h ${MYSQL_HOST} -P ${MYSQL_PORT} -u ${MYSQL_USER} -p${MYSQL_PASSWORD} \
     --single-transaction \
     --routines \
     --triggers \
@@ -49,7 +49,8 @@ echo "Backup created: ${BACKUP_FILE}"
 
 # Upload to Cloudflare R2
 echo "Uploading to Cloudflare R2..."
-rclone copy ${BACKUP_FILE} r2:${R2_BUCKET}/${R2_PATH}/
+rclone copy ${BACKUP_FILE} r2:${R2_PATH}/
+
 
 echo "Backup uploaded successfully to r2:${R2_BUCKET}/${R2_PATH}/"
 
