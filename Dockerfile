@@ -2,6 +2,7 @@ FROM alpine:latest
 
 RUN apk add --no-cache \
     mysql-client \
+    mariadb-connector-c \
     rclone \
     bash \
     gzip

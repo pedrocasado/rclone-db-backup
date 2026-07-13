@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 # MySQL credentials
 MYSQL_HOST=${MYSQL_HOST:-localhost}
